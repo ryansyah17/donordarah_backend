@@ -45,7 +45,10 @@ class UserController extends Controller
         ]);
 
         if ($user) {
-            return response()->json(['message' => 'Successfully logged out']);
+            return response()->json([
+                'message' => 'Successfully logged out',
+                'user' => $user
+            ]);
         } else {
             response()->json(['message' => 'pendaftaran gagal']);
         }
