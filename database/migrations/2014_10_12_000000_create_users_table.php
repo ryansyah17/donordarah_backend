@@ -17,8 +17,13 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->enum('goldarah', ['A', 'B', 'AB', 'O'])->nullable();
+            $table->string('alamat');
+            $table->enum('jenis_kelamin', ['laki-laki', 'perempuan'])->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->enum('roles', ['user', 'admin', 'superadmin'])->default('user');
+            $table->string('profil_pictures')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
