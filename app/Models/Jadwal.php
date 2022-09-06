@@ -14,6 +14,7 @@ class Jadwal extends Model
         'latitude',
         'longitude',
         'picture',
+        'location',
 
     ];
 }

@@ -51,6 +51,7 @@ class JadwalApiController extends Controller
             'latitude' => 'required',
             'longitude' => 'required',
             'picture' => 'required',
+            'location' => 'required',
 
         ]);
 
@@ -70,6 +71,7 @@ class JadwalApiController extends Controller
                 'latitude' => $request->input('latitude'),
                 'longitude' => $request->input('longitude'),
                 'picture' => $request->input('picture'),
+                'location' => $request->input('location'),
 
             ]);
             if ($jadwal) {
