@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('latitude');
             $table->string('longitude');
             $table->string('picture')->nullable();
+            $table->string('location');
             $table->timestamps();
         });
     }
