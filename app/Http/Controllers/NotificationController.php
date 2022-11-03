@@ -17,7 +17,8 @@ class NotificationController extends Controller
     public function index()
     {
         $notification = Notification::all();
-        return view('notification', compact(['notification']));
+        return view('notifikasi.index', compact('notification'))
+            ->with('i', (request()->input('page', 1) - 1) * 5);
     }
 
     /**
@@ -27,7 +28,7 @@ class NotificationController extends Controller
      */
     public function create()
     {
-        //
+        return view('notifikasi.create');
     }
 
     /**
@@ -38,9 +39,9 @@ class NotificationController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $validatedData = $request->validate([
             'name' => 'required',
-            'umur' => 'required|numeric',
+            'umur' => 'required',
             'alamat' => 'required',
             'kebutuhan_darah' => 'required',
             'goldarah' => 'required',
@@ -49,47 +50,10 @@ class NotificationController extends Controller
 
         ]);
 
-        if ($validator->fails()) {
+        Notification::create($validatedData);
 
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'Semua Kolom Wajib Diisi',
-                    'data' => $validator->errors(),
-                ],
-                401
-            );
-        } else {
-            $notification = Notification::create([
-                'name' => request('name'),
-                'umur' => request('umur'),
-                'alamat' => request('alamat'),
-                'kebutuhan_darah' => request('kebutuhan_darah'),
-                'goldarah' => request('goldarah'),
-                'resus_darah' => request('resus_darah'),
-                'kontak' => request('kontak'),
-            ]);
-
-            if ($notification) {
-                return response()->json(
-                    [
-                        'success' => true,
-                        'messaage' => 'Data Notifikasi Berhasil Ditambahkan',
-                        'data' => $notification
-                    ],
-                    201
-                );
-            } else {
-                return response()->json(
-                    [
-                        'success' => false,
-                        'message' => 'Notifikasi Gagal Disimpan',
-
-                    ],
-                    400
-                );
-            }
-        }
+        return redirect()->route('notification.index')
+            ->with('success', 'Notification created successfully.');
     }
 
     /**
@@ -100,15 +64,7 @@ class NotificationController extends Controller
      */
     public function show($id)
     {
-        $notification = Notification::find($id);
-        if (is_null($notification)) {
-            return $this->sendError('Product not found.');
-        }
-        return response()->json([
-            "success" => true,
-            "message" => "Product retrieved successfully.",
-            "data" => $notification
-        ]);
+        
     }
 
     /**
@@ -117,9 +73,10 @@ class NotificationController extends Controller
      * @param  \App\Models\Notification  $notification
      * @return \Illuminate\Http\Response
      */
-    public function edit(Notification $notification)
+    public function edit($id)
     {
-        //
+        $notification = Notification::find($id);
+        return view('notifikasi.edit', compact('notification'));
     }
 
     /**
@@ -131,12 +88,19 @@ class NotificationController extends Controller
      */
     public function update(Request $request, Notification $notification)
     {
-        $notification->update($request->all());
-        return response()->json([
-            'status' => true,
-            'message' => "berhasil",
-            'post' => $notification
+        $validatedData = $request->validate([
+            'name' => 'required',
+            'umur' => 'required',
+            'alamat' => 'required',
+            'kebutuhan_darah' => 'required',
+            'goldarah' => 'required',
+            'resus_darah' => 'required',
+            'kontak' => 'required',
+
         ]);
+
+        $notification->update($validatedData);
+        return redirect()->route('notification.index')->with('Success');
     }
 
     /**
@@ -145,15 +109,11 @@ class NotificationController extends Controller
      * @param  \App\Models\Notification  $notification
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Notification $notification)
     {
-        $notification = Notification::whereId($id)->first();
         $notification->delete();
-        if ($notification) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Produk Berhasil dihapus!',
-            ], 200);
-        }
+
+        return redirect()->route('notification.index')
+            ->with('success', 'Notification deleted successfully');
     }
 }

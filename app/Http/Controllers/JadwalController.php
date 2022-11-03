@@ -16,7 +16,8 @@ class JadwalController extends Controller
     public function index()
     {
         $jadwal = Jadwal::all();
-        return view('jadwal', compact(['jadwal']));
+        return view('jadwal.index', compact('jadwal'))
+            ->with('i', (request()->input('page', 1) - 1) * 5);
     }
 
     /**
@@ -26,7 +27,7 @@ class JadwalController extends Controller
      */
     public function create()
     {
-        //
+        return view('jadwal.create');
     }
 
     /**
@@ -37,7 +38,7 @@ class JadwalController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $validatedData = $request->validate([
             'name_stand' => 'required',
             'waktu' => 'required',
             'latitude' => 'required',
@@ -47,44 +48,10 @@ class JadwalController extends Controller
 
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'Semua kolom wajib diisi',
-                    'data' => $validator->errors(),
-                ],
-                401
-            );
-        } else {
-            $jadwal = Jadwal::create([
-                'name_stand' => $request->input('name_stand'),
-                'waktu' => $request->input('waktu'),
-                'latitude' => $request->input('latitude'),
-                'longitude' => $request->input('longitude'),
-                'picture' => $request->input('picture'),
-                'location' => $request->input('location'),
+        Jadwal::create($validatedData);
 
-            ]);
-            if ($jadwal) {
-                return response()->json(
-                    [
-                        'success' => true,
-                        'message' => 'Data History Berhasil Ditambahkan',
-                        'data' => $jadwal
-                    ],
-                    201
-                );
-            } else {
-                return response()->json(
-                    [
-                        'success' => false,
-                        'message' => 'Data History gagal ditambahkan',
-                    ],
-                    400
-                );
-            }
-        }
+        return redirect()->route('jadwal.index')
+            ->with('success', 'jadwal created successfully.');
     }
 
     /**
@@ -95,15 +62,7 @@ class JadwalController extends Controller
      */
     public function show($id)
     {
-        $jadwal = Jadwal::find($id);
-        if (is_null($jadwal)) {
-            return $this->sendError('Product not found.');
-        }
-        return response()->json([
-            "success" => true,
-            "message" => "Product retrieved successfully.",
-            "data" => $jadwal
-        ]);
+        
     }
 
     /**
@@ -114,7 +73,8 @@ class JadwalController extends Controller
      */
     public function edit($id)
     {
-        //
+        $jadwal = Jadwal::find($id);
+        return view('jadwal.edit', compact('jadwal'));
     }
 
     /**
@@ -126,12 +86,20 @@ class JadwalController extends Controller
      */
     public function update(Request $request, Jadwal $jadwal)
     {
-        $jadwal->update($request->all());
-        return response()->json([
-            'status' => true,
-            'message' => "berhasil",
-            'post' => $jadwal
+        $validatedData = $request->validate([
+            'name_stand' => 'required',
+            'waktu' => 'required',
+            'latitude' => 'required',
+            'longitude' => 'required',
+            'picture' => 'required',
+            'location' => 'required',
+
         ]);
+
+        $jadwal->update($validatedData);
+
+        return redirect()->route('jadwal.index')
+            ->with('success', 'jadwal Updated successfully.');
     }
 
     /**
@@ -140,15 +108,11 @@ class JadwalController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Jadwal $jadwal)
     {
-        $jadwal = Jadwal::whereId($id)->first();
         $jadwal->delete();
-        if ($jadwal) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Produk Berhasil dihapus!',
-            ], 200);
-        }
+
+        return redirect()->route('jadwal.index')
+            ->with('success', 'jadwal deleted successfully');
     }
 }

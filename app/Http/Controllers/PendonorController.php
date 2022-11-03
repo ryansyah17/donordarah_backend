@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Member;
 use App\Models\Pendonor;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -15,8 +17,9 @@ class PendonorController extends Controller
      */
     public function index()
     {
-        $pendonor = Pendonor::all();
-        return view('pendonor', compact(['pendonor']));
+        $pendonor = Pendonor::latest()->paginate(5);
+        return view('pendonor.index', compact('pendonor'))
+            ->with('i', (request()->input('page', 1) - 1) * 5);
     }
 
     /**
@@ -25,7 +28,11 @@ class PendonorController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create()
-    { }
+    {
+        
+        $member = Member::all();
+        return view('pendonor.create', compact('member'));
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -35,7 +42,7 @@ class PendonorController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $validatedData = $request->validate([
             'id_users' => 'required',
             'name' => 'required',
             'tempat_lahir' => 'required',
@@ -50,177 +57,76 @@ class PendonorController extends Controller
             'tanggal_donor' => 'required',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'Semua kolom wajib diisi',
-                    'data' => $validator->errors(),
-                ],
-                401
-            );
-        } else {
-            $pendonor = Pendonor::create([
-                'id_users' => $request->input('id_users'),
-                'name' => $request->input('name'),
-                'tempat_lahir' => $request->input('tempat_lahir'),
-                'tanggal_lahir' => $request->input('tanggal_lahir'),
-                'jenis_kelamin' => $request->input('jenis_kelamin'),
-                'alamat' => $request->input('alamat'),
-                'nohp' => $request->input('nohp'),
-                'goldarah' => $request->input('goldarah'),
-                'beratbadan' => $request->input('beratbadan'),
-                'tekanandarah' => $request->input('tekanandarah'),
-                'kadarhb' => $request->input('kadarhb'),
-                'tanggal_donor' => $request->input('tanggal_donor'),
-            ]);
-            if ($pendonor) {
-                return response()->json(
-                    [
-                        'success' => true,
-                        'message' => 'Data Pendonor Berhasil Ditambahkan',
-                        'data' => $pendonor
-                    ],
-                    201
-                );
-            } else {
-                return response()->json(
-                    [
-                        'success' => false,
-                        'message' => 'Pendonor gagal ditambahkan',
-                    ],
-                    400
-                );
-            }
-        }
+        Pendonor::create($validatedData);
+
+        return redirect()->route('pendonor.index')
+            ->with('success', 'Pendonor created successfully.');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Pendonor  $pendonor
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $pendonor = Pendonor::find($id);
-        if (is_null($pendonor)) {
-            return $this->sendError('Product not found.');
-        }
-        return response()->json([
-            "success" => true,
-            "message" => "Product retrieved successfully.",
-            "data" => $pendonor
-        ]);
+        //
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Pendonor  $pendonor
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Pendonor $pendonor)
+    public function edit($id)
     {
-        //
+        $pendonor = Pendonor::find($id);
+        $member = Member::all();
+        return view('pendonor.edit', compact('pendonor','member'));
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Pendonor  $pendonor
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Pendonor $pendonor)
     {
-        // $pendonor = Pendonor::find($id);
-        // $validator = Validator::make($request->all(), [
-        //     'id_users' => 'required',
-        //     'name' => 'required',
-        //     'tempat_lahir' => 'required',
-        //     'tanggal_lahir' => 'required',
-        //     'jenis_kelamin' => 'required',
-        //     'alamat' => 'required',
-        //     'nohp' => 'required',
-        //     'goldarah' => 'required',
-        //     'beratbadan' => 'required',
-        //     'tekanandarah' => 'required',
-        //     'kadarhb' => 'required',
-        //     'tanggal_donor' => 'required',
-        // ]);
-
-        // if ($validator->fails()) {
-        //     return response()->json(
-        //         [
-        //             'success' => false,
-        //             'message' => 'Semua kolom wajib diisi',
-        //             'data' => $validator->errors(),
-        //         ],
-        //         401
-        //     );
-        // } else {
-        //     $pendonor = Pendonor::update([
-        //         'id_users' => $request->input('id_users'),
-        //         'name' => $request->input('name'),
-        //         'tempat_lahir' => $request->input('tempat_lahir'),
-        //         'tanggal_lahir' => $request->input('tanggal_lahir'),
-        //         'jenis_kelamin' => $request->input('jenis_kelamin'),
-        //         'alamat' => $request->input('alamat'),
-        //         'nohp' => $request->input('nohp'),
-        //         'goldarah' => $request->input('goldarah'),
-        //         'beratbadan' => $request->input('beratbadan'),
-        //         'tekanandarah' => $request->input('tekanandarah'),
-        //         'kadarhb' => $request->input('kadarhb'),
-        //         'tanggal_donor' => $request->input('tanggal_donor'),
-        //     ]);
-        //     if ($pendonor) {
-        //         return response()->json(
-        //             [
-        //                 'success' => true,
-        //                 'message' => 'Data Pendonor Berhasil Ditambahkan',
-        //                 'data' => $pendonor
-        //             ],
-        //             201
-        //         );
-        //     } else {
-        //         return response()->json(
-        //             [
-        //                 'success' => false,
-        //                 'message' => 'Pendonor gagal ditambahkan',
-        //             ],
-        //             400
-        //         );
-        //     }
-        // }
-        $pendonor->update($request->all());
-        return response()->json([
-            'status' => true,
-            'message' => "berhasil",
-            'post' => $pendonor
+        $validatedData = $request->validate([
+            'id_users' => 'required',
+            'name' => 'required',
+            'tempat_lahir' => 'required',
+            'tanggal_lahir' => 'required',
+            'jenis_kelamin' => 'required',
+            'alamat' => 'required',
+            'nohp' => 'required',
+            'goldarah' => 'required',
+            'beratbadan' => 'required',
+            'tekanandarah' => 'required',
+            'kadarhb' => 'required',
+            'tanggal_donor' => 'required',
         ]);
+
+        $pendonor->update($validatedData);
+        return redirect()->route('pendonor.index')
+            ->with('success', 'Pendonor created successfully.');
     }
-
-
-
-
-
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Pendonor  $pendonor
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Pendonor $pendonor)
     {
-        $pendonor = Pendonor::whereId($id)->first();
         $pendonor->delete();
-        if ($pendonor) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Produk Berhasil dihapus!',
-            ], 200);
-        }
+
+        return redirect()->route('pendonor.index')
+            ->with('success', 'Pendonor deleted successfully');
     }
 }

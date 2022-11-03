@@ -15,4 +15,6 @@ class Stokdarah extends Model
         'goldarah_o',
 
     ];
+
+    public $timestamps = false;
 }

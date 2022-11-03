@@ -2,20 +2,19 @@
 @section('content')
     <div class="container-fluid page-body-wrapper">
         <!-- partial:../../partials/_navbar.html -->
-        <nav class="navbar p-0 fixed-top d-flex flex-row">
+        {{-- <nav class="navbar p-0 fixed-top d-flex flex-row">
             <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
-                <a class="navbar-brand brand-logo-mini" href="../../index.html"><img
-                        src="../../assets/images/logo-mini.svg" alt="logo" /></a>
+                <a class="navbar-brand brand-logo-mini" href="../../index.html"><img src="../../assets/images/logo-mini.svg"
+                        alt="logo" /></a>
             </div>
             <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
-                <button class="navbar-toggler navbar-toggler align-self-center" type="button"
-                    data-toggle="minimize">
+                <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
                     <span class="mdi mdi-menu"></span>
                 </button>
-                
+
                 <ul class="navbar-nav navbar-nav-right">
-                   
-                   
+
+
                     <li class="nav-item dropdown">
                         <a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
                             <div class="navbar-profile">
@@ -60,42 +59,53 @@
                     <span class="mdi mdi-format-line-spacing"></span>
                 </button>
             </div>
-        </nav>
+        </nav> --}}
         <!-- partial -->
         <div class="main-panel">
             <div class="content-wrapper">
-                <div class="page-header">
-                   
-                </div>
+                
                 <div class="row">
                     <div class="col-lg-12 grid-margin stretch-card">
                         <div class="card">
                             <div class="card-body">
-                                <h4 class="card-title">Daftar Member</h4>
-                                <p class="card-description"> Add class <code>.table-striped</code>
+                                <h4 class="card-title">Daftar Stok Darah</h4>
+                                <a class="btn btn-success" href="{{ route('stokdarah.create') }}"> Tambah</a>
                                 </p>
                                 <div class="table-responsive">
                                     <table class="table table-striped">
                                         <thead>
                                             <tr>
                                                 <th> No </th>
-                                                <th> Nama </th>
-                                                <th> Jenis Kelamin </th>
-                                                <th> Alamat </th>
-                                                <th> Gol.Darah </th>
+                                                <th> Golongan Darah A</th>
+                                                <th> Golongan Darah B</th>
+                                                <th> Golongan Darah AB</th>
+                                                <th> Golongan Darah O</th>
                                                 <th> Aksi </th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td >1</td>
-                                                <td>Herman Beck </td>
-                                                <td>Laki-Laki</td>
-                                                <td> Padang</td>
-                                                <td> O </td>
-                                                <td><button class="btn btn-warning">edit</button> | <button class="btn btn-danger">Hapus</button></td>
-                                            </tr>
-                                            
+                                            @foreach ($stokdarah as $stok)
+                                                <tr>
+
+                                                    <td>{{ ++$i }}</td>
+                                                    <td>{{ $stok->goldarah_a }}  Kantong</td>
+                                                    <td>{{ $stok->goldarah_b }}  Kantong</td>
+                                                    <td>{{ $stok->goldarah_ab }}  Kantong</td>
+                                                    <td>{{ $stok->goldarah_o }}  Kantong</td>
+                                                    <td>
+                                                        <form action="{{ route('stokdarah.destroy', $stok->id) }}" method="POST">
+                                                            <a class="btn btn-warning" href="{{ route('stokdarah.edit', $stok->id) }}"
+                                                                title="Ubah Stok Darah">Edit</a>
+                            
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-danger"
+                                                                onclick="return confirm('Are you sure you want to delete')">Hapus</button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+
 
                                         </tbody>
                                     </table>
