@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\JadwalController;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PendonorController;
@@ -19,8 +20,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/login',[LoginController::class, 'halamanlogin']);
+Route::post('/postlogin',[LoginController::class, 'postlogin'])->name('postlogin');
 
-Route::get('/',[MemberController::class, 'index']);
+Route::get('/',[LoginController::class, 'halamanlogin']);
 Route::get('/pendonor',[PendonorController::class, 'index']);
 
 Route::get('/history',[HistoryController::class, 'index']);
