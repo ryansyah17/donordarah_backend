@@ -24,8 +24,8 @@ return new class extends Migration
             $table->string('nohp');
             $table->enum('goldarah', ['A', 'B', 'AB', 'O'])->nullable();
             $table->integer('beratbadan');
-            $table->integer('tekanandarah');
-            $table->integer('kadarhb');
+            $table->integer('tekanandarah')->nullable();
+            $table->integer('kadarhb')->nullable();
             $table->date('tanggal_donor');
             $table->timestamps();
         });
